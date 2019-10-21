@@ -11,8 +11,9 @@ namespace WorkingWithEFCore
     {
         static void Main(string[] args)
         {
-            QeryCategories();
-            QueryingProducts();
+            //QeryCategories();
+            //QueryingProducts();
+            QueryingWithLike();
         }
         static void QeryCategories()
         {
@@ -49,6 +50,26 @@ namespace WorkingWithEFCore
                 foreach (Product item in prods)
                 {
                     WriteLine($"{item.ProductID} : {item.ProductName} costs {item.Cost : $#,##0.00} and has {item.Stock} unit in stock");
+                }
+            }
+        }
+        static void QueryingWithLike()
+        {
+            using (var dataBase = new Northwind())
+
+            {
+                var loggerFactory = dataBase.GetService<ILoggerFactory>();
+                loggerFactory.AddProvider(new ConsoleLoggerProvider());
+
+                Write($"Enter a part og product name: ");
+                string input = ReadLine();
+
+                IQueryable<Product> products = dataBase.Products
+                    .Where(p => EF.Functions.Like(p.ProductName, $"%{input}%"));
+
+                foreach (Product item in products)
+                {
+                    WriteLine($"{item.ProductName} has {item.Stock} units in stock. Discontinued? {item.Discontinued}");
                 }
             }
         }
