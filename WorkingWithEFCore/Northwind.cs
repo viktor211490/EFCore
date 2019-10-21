@@ -13,5 +13,17 @@ namespace WorkingWithEFCore
         {
             optionsBuilder.UseSqlServer(@"Data Source=(localdb)\mssqllocaldb;" + "Initial Catalog=Northwind;" + "Integrated Security=true;" + "MultipleActiveResultSets=true;");
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //пример использования Fluent API
+            //для ограничения названия категорий до менее 40
+            modelBuilder.Entity<Category>()
+                .Property(category => category.CategoryName)
+                .IsRequired()
+                .HasMaxLength(40);
+            //глобальный фильтр для удаления снятых с продажи товаров
+            modelBuilder.Entity<Product>()
+                .HasQueryFilter(p => !p.Discontinued);
+        }
     }
 }
